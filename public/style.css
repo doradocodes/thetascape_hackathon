@@ -1,0 +1,35 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
+
+ul {
+    list-style: none; /* Hide bullets */
+    padding: 0;
+}
+
+li {
+    margin-bottom: 1px;
+    margin-top:1px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+
+}
+
+#connect_button {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
