@@ -1,6 +1,6 @@
-/* 
+/*
  *  DSP.js - a comprehensive digital signal processing  library for javascript
- * 
+ *
  *  Created by Corban Brook <corbanbrook@gmail.com> on 2010-01-01.
  *  Copyright 2010 Corban Brook. All rights reserved.
  *
@@ -18,26 +18,26 @@
 class FFT {
 
     constructor(bufferSize, sampleRate) {
-        
+
         //save incoming vars
         this.bufferSize = bufferSize;
         this.sampleRate = sampleRate;
 
         //init and calc vars
-        this.rval; 
+        this.rval;
         this.ival;
         this.mag;
         this.sqrt = Math.sqrt;
         this.bandwidth = 2 / bufferSize * sampleRate / 2;
         this.bSi = 2 / this.bufferSize;
-        
+
 
         //init arrays that hold the real and imaginary data
         this.spectrum = new Float64Array(bufferSize / 2);
         this.real = new Float64Array(bufferSize);
         this.imag = new Float64Array(bufferSize);
 
-        //peaks 
+        //peaks
         this.peakBand = 0;
         this.peak = 0;
 
@@ -77,7 +77,7 @@ class FFT {
 
     //called by code that needs to convert time based data into a frequency spectrum
     forward(buffer) {
-        
+
         // Locally scope variables for speed up
         var bufferSize = this.bufferSize,
             cosTable = this.cosTable,
@@ -88,7 +88,7 @@ class FFT {
             spectrum = this.spectrum;
 
         var k = Math.floor(Math.log(bufferSize) / Math.LN2);
-        
+
         if (Math.pow(2, k) !== bufferSize) { throw "Invalid buffer size, must be a power of 2."; }
         if (bufferSize !== buffer.length) { throw "Supplied buffer is not the same size as defined FFT. FFT Size: " + bufferSize + " Buffer Size: " + buffer.length; }
 
@@ -102,14 +102,14 @@ class FFT {
             ti,
             tmpReal,
             i;
-     
+
         for (i = 0; i < bufferSize; i++) {
             real[i] = buffer[reverseTable[i]];
             imag[i] = 0;
         }
 
         while (halfSize < bufferSize) {
-            
+
             phaseShiftStepReal = cosTable[halfSize];
             phaseShiftStepImag = sinTable[halfSize];
 
@@ -144,7 +144,7 @@ class FFT {
         for (var i = 0, N = bufferSize / 2; i < N; i++) {
             this.rval = real[i];
             this.ival = imag[i];
-            this.mag = this.bSi * sqrt(this.rval * this.rval + this.ival * this.ival);
+            this.mag = this.bSi * this.sqrt(this.rval * this.rval + this.ival * this.ival);
 
             if (this.mag > this.peak) {
                 this.peakBand = i;
@@ -153,7 +153,7 @@ class FFT {
 
             spectrum[i] = this.mag;
         }
-        
+
         //console.log("fft spec", spectrum);
         return spectrum;
     }

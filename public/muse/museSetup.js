@@ -14,7 +14,8 @@ function museConnected(error, characteristics) {
   if (error) {
     console.log(error); //error connecting
   } else {
-    document.querySelector('#connect_button').style.display = 'none';
+    // document.querySelector('#connect_button').style.display = 'none';
+    isConnectButtonVisible = false;
 
     //prepare muse to stream data
     let museIsReady = initMuseStreaming(characteristics);

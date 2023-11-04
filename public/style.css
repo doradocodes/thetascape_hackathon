@@ -5,6 +5,17 @@ body {
 }
 canvas {
   display: block;
+    position: fixed;
+    top: 0;
+    left:0;
+}
+
+canvas.active {
+    z-index: 1;
+}
+
+#tabs_canvas {
+    z-index: 1000;
 }
 
 ul {

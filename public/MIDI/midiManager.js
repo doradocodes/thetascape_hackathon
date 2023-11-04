@@ -32,23 +32,23 @@ WebMidi.enable(function (err) {
       console.error("No MIDI output available.");
       return;
     }
-    
+
     //set all to zero
     // for (let i= 0; i < stateMidiChannels.length; i++){
     //   sendStateCC(i, 0);
     // }
-    
+
   }
 });
 
 function convertMlResultsToMidiCC() {
-  
+
   sendStateCC(0, state.noise);
   sendStateCC(1, state.muscle);
   sendStateCC(2, state.focus);
   sendStateCC(3, state.clear);
   sendStateCC(4, state.meditation);
-  sendStateCC(5, state.dream);  
+  sendStateCC(5, state.dream);
 }
 
 function sendStateCC(stateID, stateValue) {
@@ -58,18 +58,18 @@ function sendStateCC(stateID, stateValue) {
   //if open...
   if (channelOpen) {
     //create midi value by mapping down the state mVolts
-    let newMidiValue = map(stateValue, 0.0, 1.0, 0, 127);
+    let newMidiValue = mapRange(stateValue, 0.0, 1.0, 0, 127);
     newMidiValue = Math.min(127, Math.max(0, newMidiValue));
     newMidiValue = Math.round(newMidiValue);
 
     //don't send same value repeatedly
     if (newMidiValue != stateMidiValues[stateID]) {
-      
+
       //get smoothing values
       let smoothingValues = stateSmoothingValues[stateID];
       let upInc = smoothingValues[0];
       let dnInc = smoothingValues[1];
-      
+
       //smoothing
       if (newMidiValue > stateMidiValues[stateID] + upInc){
         stateMidiValues[stateID] += upInc;
@@ -78,7 +78,7 @@ function sendStateCC(stateID, stateValue) {
       } else {
         stateMidiValues[stateID] = newMidiValue;
       }
-      
+
       //get state channel
       let stateMidiChannel = stateMidiChannels[stateID];
 
@@ -110,7 +110,7 @@ function testMidiButtonClicked(buttonIndex) {
   //send random value between 0 and 1 to midi CC function
   //this will make sure that it's a different value each time
   console.log("State", buttonIndex, "is send a test message for MIDI mapping");
-  
+
   //send to all midi outs
   for (let i = 0; i < midiOuts.length; i++) {
     let midiOut = midiOuts[i];
@@ -152,8 +152,8 @@ function bpmRenderLoop() {
     for (let i = 0; i < midiOuts.length; i++) {
       let midiOut = midiOuts[i];
       midiOut.playNote("C3", HEARTBEAT_MIDI_CHANNEL);
-  
-      
+
+
     }
   }
 

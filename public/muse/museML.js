@@ -209,16 +209,16 @@ function stateDetected(error, results) {
       _focus = _eye;
     }
 
-    
+
 
     //calculate alpha ratio
     let alphaRatio = eeg.alpha / eeg.delta;;
 
     //map alphaRatio from 0.5 to 0.6 to generate meditation state
-    state.meditation = map(alphaRatio, 0.40, 0.58, 0, 1);
-    state.focus = map(_focus, 0.4, 1.0, 0, 1.0);
+    state.meditation = mapRange(alphaRatio, 0.40, 0.58, 0, 1);
+    state.focus = mapRange(_focus, 0.4, 1.0, 0, 1.0);
     state.clear = _clear
-    
+
     state.dream = _dream;
 
     //send results to MIDI
@@ -292,4 +292,12 @@ function keyPressed() {
 
     neuralNetwork.addData(hzBins, target);
   }
+}
+
+// linearly maps value from the range (a..b) to (c..d)
+function mapRange(value, a, b, c, d) {
+  // first map value from (a..b) to (0..1)
+  value = (value - a) / (b - a);
+  // then map it from (0..1) to (c..d) and return it
+  return c + value * (d - c);
 }

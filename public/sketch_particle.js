@@ -2,76 +2,73 @@ let particles = [];
 let grow = true;
 let isMediating = false;
 let rotation = 0;
-let isConnectButtonVisible = true;
 
+const particleSketch = function(sketch) {
+    sketch.setup = function(){
+        let canvas1 = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight, sketch.WEBGL);
+        canvas1.position(0,0);
+        canvas1.id('particle_canvas');
+        sketch.angleMode(sketch.DEGREES);
 
-function setup() {
-    const particleCanvas = createCanvas(windowWidth, windowHeight, WEBGL);
-    particleCanvas.id('particle_canvas');
-    angleMode(DEGREES);
+        sketch.frameRate(45);
 
-    frameRate(45);
+        let x = sketch.random(-100, 100);
+        let y = sketch.random(-100, 100);
+        let z = sketch.random(-100, 100);
 
-    let x = random(-100, 100);
-    let y = random(-100, 100);
-    let z = random(-100, 100);
+        let pos = sketch.createVector(x, y, z);
 
-    let pos = createVector(x, y, z);
-
-    for(let i = 0; i < 100; i++) {
-        let c = color(255, 255, 255);
-        let p = new Particle(pos, c);
-        particles.push(p);
+        for(let i = 0; i < 100; i++) {
+            let c = sketch.color(255, 255, 255);
+            let p = new Particle(sketch, pos, c);
+            particles.push(p);
+        }
     }
-    setupMuse();
-    setupMuseML();
+    sketch.draw = function() {
+        sketch.background(0, 0, 0);
 
-    drawButton();
+        if(!showRawData) {
+            if (!isMediating) {
+                // rotate movement
+                rotation++;
+            }
+
+            sketch.rotateX(rotation);
+            sketch.rotateY(rotation);
+            sketch.rotateZ(rotation);
+
+
+            for(let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].show();
+            }
+
+            console.log(state);
+
+            if (parseFloat(state.clear) > 0.5) {
+                grow = false;
+            } else {
+                grow = true;
+            }
+
+            if (state.meditation > 0.5) {
+                sketch.frameRate(30);
+                grow = false;
+            } else {
+                sketch.frameRate(60);
+            }
+        }
+
+    }
 }
-
-
-
-function draw() {
-    // console.log(frameCount)
-    background(0, 0, 0);
-
-
-    if (!isMediating) {
-        // rotate movement
-        rotation++;
-    }
-
-    rotateX(rotation);
-    rotateY(rotation);
-    rotateZ(rotation);
-
-    // directionalLight([255], createVector(0,0,-1))
-
-
-    for(let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update();
-        particles[i].show();
-    }
-}
-
-// function mousePressed() {
-//     console.log('flip direction')
-//     grow = !grow;
-// }
-//
-// function keyPressed(){
-//     if (keyCode === ENTER){
-//         frameRate(30);
-//         console.log('isMediating', isMediating)
-//     }
-// }
-
+new p5(particleSketch);
 
 class Particle {
-    constructor(pos, color) {
-        this.pos = createVector(pos.x, pos.y, pos.z);
+    constructor(sketch, pos, color) {
+        this.sketch = sketch;
+        this.pos = this.sketch.createVector(pos.x, pos.y, pos.z);
         this.initPos = this.pos.copy();
-        this.vel = p5.Vector.random3D().normalize().mult(random(4, 6));
+        this.vel = p5.Vector.random3D().normalize().mult(this.sketch.random(4, 6));
         this.color = color;
         this.width = 1;
         this.pos.add(this.vel);
@@ -93,47 +90,11 @@ class Particle {
     }
 
     show() {
-        push();
-        noStroke();
-        fill(this.color);
-        translate(this.pos.x, this.pos.y, this.pos.z);
-        sphere(this.width);
-        pop();
-    }
-}
-
-
-function drawButton() {
-    const connectButton = document.querySelector('#connect_button');
-    connectButton.addEventListener('click', connectToMuse);
-
-}
-
-// function drawButton() {
-//     // Draw the connectButton
-//     fill(0); // connectButton color black
-//     stroke(255); // Border color white
-//     strokeWeight(1); // Border thickness
-//     rect(connectButton.x, connectButton.y, connectButton.w, connectButton.h, 3); // 5 is for slight rounding of corners
-//
-//     // connectButton text
-//     noStroke();
-//     fill(255); // Text color white
-//     textAlign(CENTER, CENTER);
-//     textSize(14);
-//     text('CONNECT', connectButton.x + connectButton.w / 2, connectButton.y + connectButton.h / 2);
-// }
-
-function drawTabs() {
-    for (let i = 0; i < tabs.length; i++) {
-        let tab = tabs[i];
-        fill(i === activeTab ? 40 : 0); // Active tab is lighter
-        stroke(255);
-        rect(tab.x, tab.y, tab.w, tab.h);
-        fill(255);
-        noStroke();
-        textSize(14);
-        textAlign(CENTER, CENTER);
-        text(tab.label, tab.x + tab.w / 2, tab.y + tab.h / 2);
+        this.sketch.push();
+        this.sketch.noStroke();
+        this.sketch.fill(this.color);
+        this.sketch.translate(this.pos.x, this.pos.y, this.pos.z);
+        this.sketch.sphere(this.width);
+        this.sketch.pop();
     }
 }
